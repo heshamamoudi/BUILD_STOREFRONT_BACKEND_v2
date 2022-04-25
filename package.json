@@ -7,7 +7,7 @@
     "start": "npm run build  && db-migrate -e dev up && nodemon ./dist/server.js",
     "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./dist --onSuccess \"node ./dist/server.js\"",
     "build": "tsc",
-    "test":"npm run build  && jasmine --config=spec/support/jasmine.json ",
+    "test": "cross-env ENVI=test && db-migrate -e test up && tsc && jasmine --config=spec/support/jasmine.json && db-migrate -e test reset",
     "lint": "eslint --config .eslintrc ./src/**/*.ts",
     "prettier": "prettier --config .prettierrc src/**/*.ts --write"
   },
