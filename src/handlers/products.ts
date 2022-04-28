@@ -1,6 +1,5 @@
 import * as express from 'express';
 import { product, productStore } from '../models/products';
-import * as jwt from 'jsonwebtoken';
 import { authToken } from '../middleware/tokenAuth';
 
 const store = new productStore();

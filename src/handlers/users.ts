@@ -2,25 +2,19 @@ import * as express from 'express';
 import { User, UserStore } from '../models/user';
 import * as jwt from 'jsonwebtoken';
 import { authToken } from '../middleware/tokenAuth';
+import * as fs from 'fs';
 const store = new UserStore();
-
-
-
-
-
+const private_key = fs.readFileSync('private.pem');
 
 const index = async (req: express.Request, res: express.Response) => {
   try {
-     const users = await store.index();
+    const users = await store.index();
     res.json(users);
   } catch (error) {
     res.status(400);
     res.json(`invalid token ${error}`);
   }
- 
 };
-
-
 
 const Show = async (req: express.Request, res: express.Response) => {
   try {
@@ -29,49 +23,58 @@ const Show = async (req: express.Request, res: express.Response) => {
   } catch (err) {
     res.status(400);
     res.json(err);
-    
   }
-
-  
 };
 
 const Create = async (req: express.Request, res: express.Response) => {
   let data = req.body;
   const user: User = {
-    first_name:data.first_name,
-    last_name:data.last_name,
+    first_name: data.first_name,
+    last_name: data.last_name,
     username: data.username,
     password: data.password
   };
   try {
     const newUser = await store.create(user);
-    var token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET);
-    res.json(token);
+    const token = jwt.sign(
+      { name: newUser.first_name, Lname: newUser.last_name },
+      private_key,
+      {
+        algorithm: 'RS256',
+        expiresIn: '2h',
+        subject: newUser.id + ''
+      }
+    );
+    res.json({idToken:token});
   } catch (err) {
     res.status(400);
-    res.json(err + user)
+    res.json(err + user);
   }
 };
 
 const signin = async (req: express.Request, res: express.Response) => {
- let data = req.body;
-    const userinput:User={
-      username:data.username ,
-      password:data.password
-    }
-  
+  let data = req.body;
+  const userinput: User = {
+    username: data.username,
+    password: data.password
+  };
+
   try {
-    
     const user = await store.authenticate(userinput);
-    switch(true){
-      case  (user !== null):
-      const token = jwt.sign(user, process.env.TOKEN_SECRET);
-      res.json(token);
-      break;
-      case  (user === null):
-        res.json('Please use Sign up!');
-        break;
+
+    if (user !== null) {
+      const token = jwt.sign(
+        { name: user.first_name, Lname: user.last_name },
+        private_key,
+        {
+          algorithm: 'RS256',
+          expiresIn: '2h',
+          subject: user.id + ''
+        }
+      );
+       res.json({idToken:token});
     }
+    if (user === null) res.json('Please use Sign up!');
   } catch (error) {
     res.status(401);
     res.json({ error });
@@ -107,9 +110,9 @@ const signin = async (req: express.Request, res: express.Response) => {
 // }
 
 const user_routes = (app: express.Application) => {
-  app.get('/users',authToken ,index);
-  app.get('/users/:id', authToken,Show);
-  app.post('/users/signin', signin);
+  app.get('/users', authToken, index);
+  app.get('/users/:id', authToken, Show);
+  app.post('/signin', signin);
   app.post('/signup', Create);
   // app.put('/users/:id', Update)
   // app.delete('/users/:id',Delete)

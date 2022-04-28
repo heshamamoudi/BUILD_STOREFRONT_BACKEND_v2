@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = require("../models/user");
 const jwt = require("jsonwebtoken");
 const tokenAuth_1 = require("../middleware/tokenAuth");
+const fs = require("fs");
 const store = new user_1.UserStore();
+const private_key = fs.readFileSync('private.pem');
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield store.index();
@@ -43,8 +45,12 @@ const Create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     };
     try {
         const newUser = yield store.create(user);
-        var token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET);
-        res.json(token);
+        const token = jwt.sign({ name: newUser.first_name, Lname: newUser.last_name }, private_key, {
+            algorithm: 'RS256',
+            expiresIn: '2h',
+            subject: newUser.id + ''
+        });
+        res.json({ idToken: token });
     }
     catch (err) {
         res.status(400);
@@ -59,15 +65,16 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     };
     try {
         const user = yield store.authenticate(userinput);
-        switch (true) {
-            case (user !== null):
-                const token = jwt.sign(user, process.env.TOKEN_SECRET);
-                res.json(token);
-                break;
-            case (user === null):
-                res.json('Please use Sign up!');
-                break;
+        if (user !== null) {
+            const token = jwt.sign({ name: user.first_name, Lname: user.last_name }, private_key, {
+                algorithm: 'RS256',
+                expiresIn: '2h',
+                subject: user.id + ''
+            });
+            res.json({ idToken: token });
         }
+        if (user === null)
+            res.json('Please use Sign up!');
     }
     catch (error) {
         res.status(401);
@@ -101,7 +108,7 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const user_routes = (app) => {
     app.get('/users', tokenAuth_1.authToken, index);
     app.get('/users/:id', tokenAuth_1.authToken, Show);
-    app.post('/users/signin', signin);
+    app.post('/signin', signin);
     app.post('/signup', Create);
     // app.put('/users/:id', Update)
     // app.delete('/users/:id',Delete)

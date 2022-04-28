@@ -17,12 +17,12 @@ class UserStore {
     authenticate(user) {
         return __awaiter(this, void 0, void 0, function* () {
             const conn = yield database_1.default.connect();
-            const sql = 'SELECT password FROM users WHERE username=($1)';
+            const sql = 'SELECT password,id,first_name,last_name,username FROM users WHERE username=$1;';
             const result = yield conn.query(sql, [user.username]);
             if (result.rows.length) {
                 const userOutcome = result.rows[0];
                 if (bcrypt.compareSync(user.password + BCRYPT_PASSWORD, userOutcome.password)) {
-                    return user;
+                    return userOutcome;
                 }
             }
             return null;
