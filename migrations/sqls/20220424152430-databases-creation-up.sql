@@ -1,1 +1,1 @@
-/* Replace with your SQL commands */
+create database node_js;

@@ -17,6 +17,6 @@ app.use(bodyParser.json());
 (0, products_1.default)(app);
 (0, orders_1.default)(app);
 app.listen(5000, function () {
-    console.log(`starting app on: ${address}`);
+    console.log(`starting app on: http://${address}`);
 });
 exports.default = app;

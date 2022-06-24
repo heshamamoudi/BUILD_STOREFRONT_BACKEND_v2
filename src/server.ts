@@ -20,7 +20,7 @@ products_routes(app);
 order_routes(app);
 
 app.listen(5000, function () {
-  console.log(`starting app on: ${address}`);
+  console.log(`starting app on: http://${address}`);
 });
 
 export default app;

@@ -1,1 +1,1 @@
-/* Replace with your SQL commands */
+DROP database node_js cascade;

@@ -58,11 +58,8 @@ const signin = async (req: express.Request, res: express.Response) => {
     username: data.username,
     password: data.password
   };
-
   try {
     const user = await store.authenticate(userinput);
-
-    if (user !== null) {
       const token = jwt.sign(
         { name: user.first_name, Lname: user.last_name },
         private_key,
@@ -72,12 +69,10 @@ const signin = async (req: express.Request, res: express.Response) => {
           subject: user.id + ''
         }
       );
-       res.json({idToken:token});
-    }
-    if (user === null) res.json('Please use Sign up!');
+       res.json({idToken:token,name:user.first_name,lname:user.last_name,username:user.username});   
   } catch (error) {
     res.status(401);
-    res.json({ error });
+    res.json( error );
   }
 };
 

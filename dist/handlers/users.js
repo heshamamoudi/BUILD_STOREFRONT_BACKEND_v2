@@ -65,20 +65,16 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     };
     try {
         const user = yield store.authenticate(userinput);
-        if (user !== null) {
-            const token = jwt.sign({ name: user.first_name, Lname: user.last_name }, private_key, {
-                algorithm: 'RS256',
-                expiresIn: '2h',
-                subject: user.id + ''
-            });
-            res.json({ idToken: token });
-        }
-        if (user === null)
-            res.json('Please use Sign up!');
+        const token = jwt.sign({ name: user.first_name, Lname: user.last_name }, private_key, {
+            algorithm: 'RS256',
+            expiresIn: '2h',
+            subject: user.id + ''
+        });
+        res.json({ idToken: token, name: user.first_name, lname: user.last_name, username: user.username });
     }
     catch (error) {
         res.status(401);
-        res.json({ error });
+        res.json(error);
     }
 });
 // const Delete = async (req : express.Request, res: express.Response) =>{
