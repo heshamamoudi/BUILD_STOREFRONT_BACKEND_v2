@@ -5,7 +5,7 @@ export type order = {
   id?: number;
   status: string;
   user_id: string;
-  product_id?:number
+  product_ids?:number[]
 };
 
 export class orderStore {

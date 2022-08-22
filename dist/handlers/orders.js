@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = require("../models/orders");
-const tokenAuth_1 = require("../middleware/tokenAuth");
 const store = new orders_1.orderStore();
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -74,10 +73,10 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 //   res.json(order);
 // };
 const order_routes = (app) => {
-    app.get('/orders', tokenAuth_1.authToken, index);
-    // app.get('/orders/:id', Show);
-    app.post('/order', tokenAuth_1.authToken, Create);
-    app.post('/orders/:id/products', tokenAuth_1.authToken, addProduct);
+    app.get('/orders', index);
+    app.get('/orders/:id', Show);
+    app.post('/order', Create);
+    app.post('/orders/:id/products', addProduct);
     // // app.put('/order/:id', put)
     // app.delete('/orders/:id', Delete);
 };

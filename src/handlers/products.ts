@@ -68,7 +68,7 @@ const Create = async (req: express.Request, res: express.Response) => {
 const products_routes = (app: express.Application) => {
   app.get('/products', index);
   app.get('/products/:id', Show);
-  app.post('/product',authToken, Create);
+  app.post('/product', Create);
   // app.put('/products/:id', Update)
   // app.delete('/products/:id', Delete);
 };

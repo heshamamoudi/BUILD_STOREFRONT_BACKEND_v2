@@ -12,6 +12,7 @@ const address = 'localhost:5000';
 app.use(cors({
     origin: "*"
 }));
+app.use('/images', express.static('images'));
 app.use(bodyParser.json());
 (0, users_1.default)(app);
 (0, products_1.default)(app);
